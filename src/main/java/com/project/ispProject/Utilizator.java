@@ -46,6 +46,13 @@ public class Utilizator {
 		return usernameCorect;
 	}
 	
+	public void vizualizareProfil() {
+		System.out.println("ID: "+id);
+		System.out.println("Username: "+username);
+		System.out.println("Email: "+email);
+		
+	}
+	
 	
 	
 	
