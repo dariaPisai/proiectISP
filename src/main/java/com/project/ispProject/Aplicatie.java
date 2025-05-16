@@ -8,18 +8,19 @@ import java.util.stream.Collectors;
 
 public class Aplicatie {
 
-    private static List<Utilizator> utilizatori = new ArrayList<>();
-    private static List<TemaLicenta> toateTemele = new ArrayList<>();
-    private static List<Progres> toateProgresele = new ArrayList<>();
-    private static List<Feedback> toateFeedbackurile = new ArrayList<>();
+    public static List<Utilizator> utilizatori = new ArrayList<>();
+    public static List<TemaLicenta> toateTemele = new ArrayList<>();
+    public static List<Progres> toateProgresele = new ArrayList<>();
+    public static List<Feedback> toateFeedbackurile = new ArrayList<>();
 
     private static Utilizator utilizatorLogat = null;
     private static Scanner scanner = new Scanner(System.in);
 
+
     public static void main(String[] args) {
         initializareDate();
 
-        while (true) { 
+        while (true) {
             if (utilizatorLogat == null) {
                 afiseazaMeniuAutentificare();
                 String optiuneLogin = scanner.nextLine();
@@ -33,7 +34,7 @@ public class Aplicatie {
                     case "3":
                         System.out.println("La revedere!");
                         scanner.close();
-                        return; 
+                        return;
                     default:
                         System.out.println("Optiune invalida.");
                 }
@@ -46,6 +47,11 @@ public class Aplicatie {
     }
 
     public static void initializareDate() {
+        utilizatori.clear();
+        toateTemele.clear();
+        toateProgresele.clear();
+        toateFeedbackurile.clear();
+
         Administrator admin = new Administrator(1, "admin", "admin@isp.com", "admin123");
         utilizatori.add(admin);
 
@@ -77,14 +83,13 @@ public class Aplicatie {
 
         utilizatori.add(stud1);
         utilizatori.add(stud2);
-
     }
 
     public static void afiseazaMeniuAutentificare() {
         System.out.println("\n--- Bine ati venit! ---");
         System.out.println("1. Autentificare");
         System.out.println("2. Creare Cont Nou");
-        System.out.println("3. Iesire"); 
+        System.out.println("3. Iesire");
         System.out.print("Alegeti o optiune: ");
     }
 
@@ -170,7 +175,6 @@ public class Aplicatie {
             if (u.autentificare(username, parola)) {
                 utilizatorLogat = u;
                 System.out.println("Autentificare reusita! Bine ai venit, " + utilizatorLogat.getUsername() + "!");
-                // Nu mai afisam profilul aici, se va afisa meniul direct
                 return;
             }
         }
@@ -178,7 +182,6 @@ public class Aplicatie {
         asteaptaEnter();
     }
 
-    // Metoda buclaMeniuUtilizatorLogat - NOUA / MODIFICATA
     public static void buclaMeniuUtilizatorLogat() {
         boolean continuaSesiunea = true;
         while (continuaSesiunea) {
@@ -242,7 +245,7 @@ public class Aplicatie {
                 student.vizualizareProfil();
                 break;
             case "2":
-                ArrayList<TemaLicenta> temePentruAlegere = toateTemele.stream()
+                ArrayList<TemaLicenta> temePentruAlegere = Aplicatie.toateTemele.stream() 
                         .filter(t -> t.getStatusActual() == StatusTema.DISPONIBILA)
                         .collect(Collectors.toCollection(ArrayList::new));
                 student.setTemeDisponibile(temePentruAlegere);
@@ -252,9 +255,9 @@ public class Aplicatie {
                 if (student.getTemaDeAles() != null && student.getTemaDeAles().getStatusActual() == StatusTema.ALOCATA) {
                     System.out.print("Introduceti descrierea etapei de progres: ");
                     String descriereProgres = scanner.nextLine();
-                    Progres pNou = new Progres(toateProgresele.size() + 1, student, student.getTemaDeAles(), descriereProgres, LocalDate.now());
+                    Progres pNou = new Progres(Aplicatie.toateProgresele.size() + 1, student, student.getTemaDeAles(), descriereProgres, LocalDate.now());
                     student.adaugaProgres(pNou);
-                    toateProgresele.add(pNou);
+                    Aplicatie.toateProgresele.add(pNou);
                 } else {
                     System.out.println("Trebuie sa aveti o tema alocata pentru a adauga progres.");
                 }
@@ -268,7 +271,7 @@ public class Aplicatie {
             case "6":
                 System.out.println("\n--- Feedback Primit ---");
                 boolean feedbackGasit = false;
-                for (Feedback f : toateFeedbackurile) {
+                for (Feedback f : Aplicatie.toateFeedbackurile) {
                     if (f.getStudentDestinatar().equals(student)) {
                         System.out.println("------------------------------------");
                         System.out.println("De la: Prof. " + f.getProfesorEmitent().getNume() + " " + f.getProfesorEmitent().getPrenume());
@@ -286,7 +289,7 @@ public class Aplicatie {
             default:
                 System.out.println("Optiune invalida pentru student.");
         }
-        if(!optiuneStudent.equals("2")) { // Metoda alegereTema este deja foarte interactiva
+        if(!optiuneStudent.equals("2")) {
             asteaptaEnter();
         }
     }
@@ -301,8 +304,8 @@ public class Aplicatie {
                 profesor.propunereTema();
                 if (!profesor.getTemePropuse().isEmpty()) {
                     TemaLicenta ultimaTemaPropusa = profesor.getTemePropuse().get(profesor.getTemePropuse().size() - 1);
-                    if (!toateTemele.contains(ultimaTemaPropusa)) {
-                        toateTemele.add(ultimaTemaPropusa);
+                    if (!Aplicatie.toateTemele.contains(ultimaTemaPropusa)) {
+                        Aplicatie.toateTemele.add(ultimaTemaPropusa);
                     }
                 }
                 break;
@@ -326,7 +329,7 @@ public class Aplicatie {
                 break;
             case "4":
                 studentiSupervizati = profesor.getStudentiSupervizati(
-                        utilizatori.stream().filter(u -> u instanceof Student).map(u -> (Student) u).collect(Collectors.toList())
+                        Aplicatie.utilizatori.stream().filter(u -> u instanceof Student).map(u -> (Student) u).collect(Collectors.toList())
                 );
                 if (studentiSupervizati.isEmpty()) {
                     System.out.println("Nu aveti studenti alocati carora sa le oferiti feedback.");
@@ -343,13 +346,13 @@ public class Aplicatie {
                     String inputIndex = scanner.nextLine();
                     int indexStud = Integer.parseInt(inputIndex);
                     if (indexStud == 0) break;
-                    indexStud--; 
+                    indexStud--;
                     if (indexStud >= 0 && indexStud < studentiSupervizati.size()) {
                         Student studentSelectat = studentiSupervizati.get(indexStud);
                         if (studentSelectat.getTemaDeAles() != null && studentSelectat.getTemaDeAles().getProfesorResponsabil().equals(profesor)) {
                             profesor.oferaFeedback(studentSelectat);
                         } else {
-                             System.out.println("Acest student nu are o tema alocata de la dvs.");
+                             System.out.println("Acest student nu are o tema alocata de la dvs. sau nu are o tema deloc.");
                         }
                     } else {
                         System.out.println("Selectie invalida.");
@@ -360,7 +363,7 @@ public class Aplicatie {
                 break;
             case "5":
                 studentiSupervizati = profesor.getStudentiSupervizati(
-                        utilizatori.stream().filter(u -> u instanceof Student).map(u -> (Student) u).collect(Collectors.toList())
+                        Aplicatie.utilizatori.stream().filter(u -> u instanceof Student).map(u -> (Student) u).collect(Collectors.toList())
                 );
                 if (studentiSupervizati.isEmpty()) {
                     System.out.println("Nu aveti studenti alocati pentru a evalua.");
@@ -378,7 +381,7 @@ public class Aplicatie {
                     String inputIndexEval = scanner.nextLine();
                     int indexStudEval = Integer.parseInt(inputIndexEval);
                     if (indexStudEval == 0) break;
-                    indexStudEval--; 
+                    indexStudEval--;
                     if (indexStudEval >= 0 && indexStudEval < studentiSupervizati.size()) {
                         profesor.evaluareStudent(studentiSupervizati.get(indexStudEval));
                     } else {
@@ -403,7 +406,7 @@ public class Aplicatie {
                 admin.vizualizareProfil();
                 break;
             case "2":
-                admin.monitorizareActivități(utilizatori, toateTemele, toateProgresele);
+                admin.monitorizareActivități(Aplicatie.utilizatori, Aplicatie.toateTemele, Aplicatie.toateProgresele);
                 break;
             default:
                 System.out.println("Optiune invalida pentru administrator.");
@@ -412,7 +415,7 @@ public class Aplicatie {
     }
 
     private static Student gasesteStudentCuTema(TemaLicenta tema) {
-        return utilizatori.stream()
+        return Aplicatie.utilizatori.stream() 
                 .filter(u -> u instanceof Student)
                 .map(u -> (Student) u)
                 .filter(s -> s.getTemaDeAles() != null && s.getTemaDeAles().equals(tema))
@@ -425,11 +428,18 @@ public class Aplicatie {
         scanner.nextLine();
     }
 
+
+    public static void clearAllFeedbackForTesting() {
+        toateFeedbackurile.clear();
+    }
+
+    public static List<Feedback> getAllFeedbackForTesting() {
+        return new ArrayList<>(toateFeedbackurile); 
+    }
+
     public static void adaugaFeedbackGlobal(Feedback feedback) {
         if (feedback != null) {
             toateFeedbackurile.add(feedback);
         }
     }
-
-
 }

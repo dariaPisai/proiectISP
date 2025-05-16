@@ -95,6 +95,8 @@ public class Profesor extends Utilizator {
         );
 
         feedbackNou.trimite(); 
+        
+        Aplicatie.adaugaFeedbackGlobal(feedbackNou);
 
 
         System.out.println("Feedback-ul a fost generat.");
